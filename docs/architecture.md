@@ -6,6 +6,8 @@ See also: [Music Theory Logic](music-theory.md) | [Testing Strategy](testing.md)
 
 ## 1. Tech Stack & Dependencies
 
+Prefer established libraries over custom implementations for UI, notation, storage helpers, and testing. Keep app-specific music logic in `src/lib/`.
+
 ### Core
 
 | Package | Purpose |
@@ -248,7 +250,7 @@ flowchart LR
 ### Rendering Approach
 
 1. Use a `ref` to a container `<div>`.
-2. On mount (and whenever the note/clef/key changes), clear the container and re-render.
+2. On mount (and whenever the note/clef/key changes), **clear the container** (remove all children) and re-render from scratch. This prevents duplicate SVG/canvas content from accumulating.
 3. Use VexFlow's `Factory` API for concise rendering.
 
 ### Steps

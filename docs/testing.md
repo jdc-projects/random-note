@@ -111,3 +111,27 @@ Uses `fast-check` to generate arbitrary valid `AppConfig` values, then asserts i
 - If only test files were changed, only the failing/changed tests need to be re-run.
 - If any source files were changed, the full suite must pass.
 - Fix any test failures before finishing.
+
+## Quality Gate
+
+For any source file change, all of the following must pass before the work is considered complete:
+
+1. `npm run lint`
+2. `npm run typecheck`
+3. `npm test` (full suite: Vitest → build → Playwright)
+
+CI enforces the same checks in the same order (lint, typecheck, then `npm test`), without redundant build steps.
+
+## Deterministic Testing
+
+Pure logic and timer-related code should accept injected randomness/time controls where practical:
+
+- Note generation accepts an `rng` parameter (defaults to `Math.random`).
+- Timer hooks should work with fake timers (`vi.useFakeTimers()`) in tests.
+- Avoid direct dependencies on `Date.now()` or `Math.random()` in testable logic.
+
+## Accessibility & Responsive Verification
+
+- Integration and E2E tests should verify keyboard-accessible controls (tab navigation, Enter/Space to activate).
+- E2E tests should verify critical screen-reader text (aria-labels on the stave, labelled buttons).
+- At least one E2E test should run at mobile viewport (375×667) to catch layout regressions.

@@ -48,10 +48,21 @@ tests/
 - Property tests use `fast-check` to fuzz note generation with arbitrary configs.
 - E2E tests cover: full user flows, timer behaviour, settings persistence, responsive layout.
 
+## Quality Gate
+
+For any source file change, all of the following must pass before the work is considered complete:
+
+1. `npm run lint`
+2. `npm run typecheck`
+3. `npm test` (full suite: Vitest → build → Playwright)
+
+CI enforces the same checks in the same order (lint, typecheck, then `npm test`), without redundant build steps.
+
 ## Documentation
 
 - Keep all docs in `docs/` up-to-date when making changes that affect documented behaviour, architecture, or configuration.
 - If a change contradicts or is not covered by existing docs, update the relevant doc before finishing.
+- If package scripts or CI behaviour change, update `README.md`, `docs/deployment.md`, and `AGENTS.md` in the same change.
 
 ## Code Conventions
 
@@ -71,9 +82,17 @@ tests/
 - **State management** is React `useState` in the root page component. No external state library.
 - **VexFlow** renders the stave in `StaveDisplay.tsx` using a ref + Factory API. Re-render on note/clef/key change using `useEffect`.
 
+## Implementation Rules
+
+- **Deterministic logic:** pure logic and timer-related code should accept injected randomness/time controls where practical (e.g. `rng` parameter, fake timers) to keep tests deterministic.
+- **Rendering hygiene:** `StaveDisplay` must clear previous VexFlow output before re-rendering to avoid duplicate SVG/canvas content.
+- **Persistence compatibility:** changes to the localStorage config shape (`random-note-config`) must include backward-compatible defaults or migration logic, plus tests covering the migration path.
+- **Accessibility:** interactive UI must remain keyboard-accessible and labelled. Tests should cover keyboard flows and key screen-reader text.
+- **Responsive verification:** UI changes must be checked at both mobile (375px) and desktop widths.
+- **Dependency preference:** prefer established libraries over custom implementations for UI, notation, storage helpers, and testing. Keep app-specific music logic in `src/lib/`.
+
 ## Key Implementation Details
 
-- The note generation algorithm accepts an optional `rng` function for deterministic testing.
 - Transposition offsets: C=0, Bb=-2, Eb=+3, F=-7 semitones (written → concert).
 - Key signatures are stored as ordered lists of `{ letter, accidental }` entries.
 - Staff positions: 0 = bottom line, 8 = top line. Ledger lines extend by 2 positions per line.

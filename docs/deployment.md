@@ -29,7 +29,10 @@ jobs:
 
       - run: npm ci
 
-      - run: npm test                    # Full suite: Vitest + build + Playwright
+      - run: npm run lint
+      - run: npm run typecheck
+
+      - run: npm test                    # Full suite: Vitest → build → Playwright
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -39,7 +42,7 @@ jobs:
           cname: random-notes.jdc-projects.dev
 ```
 
-The `npm test` script handles the full pipeline: Vitest → build → Playwright. Deployment only proceeds if all tests pass.
+CI runs `lint` and `typecheck` before `npm test`. The `npm test` script handles the full pipeline (Vitest → build → Playwright), so no separate build step is needed. Deployment only proceeds if all checks pass.
 
 ---
 
@@ -103,9 +106,9 @@ Serves the static export from `./out` using the `serve` package. **This does not
 ```mermaid
 flowchart LR
     A["Push to trunk"] --> B[npm ci]
-    B --> C["npm run test:vitest\n(Vitest unit/integration/property)"]
-    C --> D["npm run build\n(Next.js static export → ./out)"]
-    D --> E["npm run test:e2e\n(Playwright against ./out)"]
+    B --> C[npm run lint]
+    C --> D[npm run typecheck]
+    D --> E["npm test\n(Vitest → build → Playwright)"]
     E --> F["Deploy to\nGitHub Pages"]
 ```
 
