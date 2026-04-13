@@ -45,6 +45,17 @@ test.describe("Random Note Generator", () => {
   });
 
   test("timer auto-advances note", async ({ page }) => {
+    const randomValues: number[] = [];
+    let callIndex = 0;
+    await page.addInitScript(() => {
+      const original = Math.random;
+      let i = 0;
+      Math.random = () => {
+        i++;
+        return (i * 0.618033988749895) % 1;
+      };
+    });
+
     await page.goto("/");
 
     await selectOption(page, "Timer", "5 seconds");
