@@ -9,10 +9,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   test-and-deploy:
     runs-on: self-hosted
@@ -40,6 +36,8 @@ jobs:
   deploy:
     needs: test-and-deploy
     runs-on: self-hosted
+    concurrency:
+      group: pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
