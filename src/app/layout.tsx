@@ -6,6 +6,9 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Random Note Generator",
   description: "Practise reading musical notes on a stave",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
