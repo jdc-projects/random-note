@@ -4,6 +4,9 @@ on:
   push:
     branches: [trunk]
 
+permissions:
+  contents: write
+
 jobs:
   test-and-deploy:
     runs-on: self-hosted
