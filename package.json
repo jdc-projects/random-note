@@ -1,0 +1,46 @@
+{
+  "name": "random-note",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "test -d out || echo '⚠️  No build found. Run npm run build first.' && serve out -l 3000",
+    "test": "npm run test:vitest && npm run build && npm run test:e2e",
+    "test:vitest": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mantine/core": "9.0.2",
+    "@mantine/form": "9.0.2",
+    "@mantine/hooks": "9.0.2",
+    "@tabler/icons-react": "^3.41.1",
+    "next": "16.2.3",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "vexflow": "5.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.28.0",
+    "eslint-config-mantine": "^4.0.3",
+    "fast-check": "^4.6.0",
+    "jsdom": "^29.0.2",
+    "postcss": "^8.5.9",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "serve": "^14.2.6",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
+  }
+}
