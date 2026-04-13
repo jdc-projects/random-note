@@ -10,6 +10,7 @@
     "test:vitest": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install --with-deps chromium",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit"
   },
