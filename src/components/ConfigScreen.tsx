@@ -190,7 +190,7 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
           {...form.getInputProps("ledgerLinesBelow")}
         />
 
-        <Stack gap={4} mb="md">
+        <Stack gap={4} mb="md" px="xs">
           <Text size="sm" fw={500}>
             Timer: {TIMER_LABELS[form.values.timerSeconds ?? 0]}
           </Text>

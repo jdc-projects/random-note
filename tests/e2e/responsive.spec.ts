@@ -7,9 +7,15 @@ test.describe("Responsive", () => {
 
     await page.goto("/");
     await expect(page.getByText("Random Note Generator")).toBeVisible();
+    const noTimerMark = page.getByText("No timer", { exact: true });
+    await expect(noTimerMark).toBeVisible();
 
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(scrollWidth).toBeLessThanOrEqual(400);
+
+    const noTimerBox = await noTimerMark.boundingBox();
+    expect(noTimerBox).not.toBeNull();
+    expect(noTimerBox!.x).toBeGreaterThanOrEqual(0);
 
     await context.close();
   });
