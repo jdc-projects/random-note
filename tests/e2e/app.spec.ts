@@ -153,4 +153,63 @@ test.describe("Random Note Generator", () => {
     await page.keyboard.press("Enter");
     await expect(page.getByRole("img", { name: /musical stave/i })).toBeVisible();
   });
+
+  test("sound toggle shows instrument dropdown", async ({ page }) => {
+    await page.goto("/");
+
+    const soundSwitch = page.getByRole("switch", { name: "Sound" });
+    await soundSwitch.click();
+
+    await expect(page.getByRole("combobox", { name: "Instrument" })).toBeVisible();
+
+    await selectOption(page, "Instrument", "Trumpet / Cornet");
+
+    await page.getByRole("button", { name: /start/i }).first().click();
+    await expect(page.getByRole("img", { name: /musical stave/i })).toBeVisible();
+  });
+
+  test("8vb toggle renders and applies", async ({ page }) => {
+    await page.goto("/");
+
+    const octaveSwitch = page.getByRole("switch", { name: /8vb/i });
+    await octaveSwitch.click();
+
+    await page.getByRole("button", { name: /start/i }).first().click();
+    await expect(page.getByRole("img", { name: /musical stave/i })).toBeVisible();
+
+    await page.getByRole("button", { name: /reveal note/i }).first().click();
+    await expect(page.getByText("Written:")).toBeVisible();
+  });
+
+  test("advanced settings expand and show chance inputs", async ({ page }) => {
+    await page.goto("/");
+
+    const accSwitch = page.getByRole("switch", { name: "Single Accidentals" });
+    await accSwitch.click();
+
+    await page.getByRole("button", { name: /advanced settings/i }).click();
+
+    await expect(page.getByText("Single Accidental Chance (%)")).toBeVisible();
+    await expect(page.getByText("Double Accidental Chance (%)")).toBeVisible();
+
+    await page.getByRole("button", { name: /start/i }).first().click();
+    await expect(page.getByRole("img", { name: /musical stave/i })).toBeVisible();
+  });
+
+  test("localStorage backward compatibility: partial config loads defaults", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "random-note-config",
+        JSON.stringify({ clef: "bass", keySignature: "G major" }),
+      );
+    });
+
+    await page.goto("/");
+
+    const clefSelect = page.getByRole("combobox", { name: "Clef", exact: true });
+    await expect(clefSelect).toHaveValue("Bass");
+
+    await page.getByRole("button", { name: /start/i }).first().click();
+    await expect(page.getByRole("img", { name: /musical stave/i })).toBeVisible();
+  });
 });

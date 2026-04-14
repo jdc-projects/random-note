@@ -107,4 +107,23 @@ describe("NotesScreen", () => {
     );
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
   });
+
+  it("renders timer bar when timerSeconds is set", () => {
+    const timerConfig: AppConfig = { ...config, timerSeconds: 5 };
+    renderWithMantine(
+      <NotesScreen config={timerConfig} note={note} onNext={vi.fn()} onChangeSettings={vi.fn()}
+        revealOpen={false} onRevealToggle={vi.fn()} noteCount={1} />,
+    );
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
+
+  it("shows shifted octave in written note when 8vb is enabled and reveal is open", () => {
+    const shiftedNote: StaffNote = { letter: "C", accidental: null, octave: 4, staffPosition: 2 };
+    const octaveConfig: AppConfig = { ...config, octaveShift: true };
+    renderWithMantine(
+      <NotesScreen config={octaveConfig} note={shiftedNote} onNext={vi.fn()} onChangeSettings={vi.fn()}
+        revealOpen={true} onRevealToggle={vi.fn()} noteCount={1} />,
+    );
+    expect(screen.getByText("C3")).toBeInTheDocument();
+  });
 });

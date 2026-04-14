@@ -95,4 +95,96 @@ describe("ConfigScreen", () => {
     expect(screen.getAllByRole("switch", { name: "Single Accidentals" }).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByRole("switch", { name: "Double Accidentals" }).length).toBeGreaterThanOrEqual(1);
   });
+
+  describe("Sound toggle", () => {
+    it("does not show Instrument dropdown when sound is off", () => {
+      renderWithMantine(<ConfigScreen initialConfig={defaultConfig} onStart={vi.fn()} />);
+      expect(screen.queryByLabelText("Instrument")).not.toBeInTheDocument();
+    });
+
+    it("shows Instrument dropdown when sound is on", () => {
+      const config = { ...defaultConfig, soundEnabled: true };
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={vi.fn()} />);
+      const inputs = screen.getAllByLabelText("Instrument");
+      expect(inputs.find((el) => el.getAttribute("data-path") === "instrument")).toBeInTheDocument();
+    });
+
+    it("includes soundEnabled in submitted config", () => {
+      const config = { ...defaultConfig, soundEnabled: true, instrument: "trumpet" as const };
+      const onStart = vi.fn();
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={onStart} />);
+      fireEvent.click(findSubmitButton());
+      expect(onStart).toHaveBeenCalledWith(
+        expect.objectContaining({ soundEnabled: true, instrument: "trumpet" }),
+      );
+    });
+  });
+
+  describe("8vb toggle", () => {
+    it("renders the 8vb switch", () => {
+      renderWithMantine(<ConfigScreen initialConfig={defaultConfig} onStart={vi.fn()} />);
+      expect(screen.getAllByRole("switch", { name: /8vb/i }).length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("includes octaveShift in submitted config when enabled", () => {
+      const config = { ...defaultConfig, octaveShift: true };
+      const onStart = vi.fn();
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={onStart} />);
+      fireEvent.click(findSubmitButton());
+      expect(onStart).toHaveBeenCalledWith(
+        expect.objectContaining({ octaveShift: true }),
+      );
+    });
+  });
+
+  describe("Timer slider", () => {
+    it("renders the timer section with slider", () => {
+      renderWithMantine(<ConfigScreen initialConfig={defaultConfig} onStart={vi.fn()} />);
+      expect(screen.getByRole("slider")).toBeInTheDocument();
+      expect(screen.getByText(/Timer:/)).toBeInTheDocument();
+    });
+
+    it("includes timerSeconds in submitted config", () => {
+      const config = { ...defaultConfig, timerSeconds: 5 };
+      const onStart = vi.fn();
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={onStart} />);
+      fireEvent.click(findSubmitButton());
+      expect(onStart).toHaveBeenCalledWith(
+        expect.objectContaining({ timerSeconds: 5 }),
+      );
+    });
+  });
+
+  describe("Advanced settings", () => {
+    it("has an Advanced Settings toggle button", () => {
+      renderWithMantine(<ConfigScreen initialConfig={defaultConfig} onStart={vi.fn()} />);
+      expect(findButton(/advanced settings/i)).toBeInTheDocument();
+    });
+
+    it("shows accidental chance inputs when Advanced Settings is clicked", () => {
+      const config = { ...defaultConfig, singleAccidentals: true };
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={vi.fn()} />);
+      fireEvent.click(findButton(/advanced settings/i));
+      expect(screen.getByText("Single Accidental Chance (%)")).toBeInTheDocument();
+      expect(screen.getByText("Double Accidental Chance (%)")).toBeInTheDocument();
+    });
+
+    it("includes accidental chances in submitted config", () => {
+      const config = {
+        ...defaultConfig,
+        singleAccidentals: true,
+        singleAccidentalChance: 30,
+        doubleAccidentalChance: 10,
+      };
+      const onStart = vi.fn();
+      renderWithMantine(<ConfigScreen initialConfig={config} onStart={onStart} />);
+      fireEvent.click(findSubmitButton());
+      expect(onStart).toHaveBeenCalledWith(
+        expect.objectContaining({
+          singleAccidentalChance: 30,
+          doubleAccidentalChance: 10,
+        }),
+      );
+    });
+  });
 });
