@@ -14,6 +14,8 @@ const baseConfig: AppConfig = {
   timerSeconds: null,
   soundEnabled: false,
   octaveShift: false,
+  singleAccidentalChance: 20,
+  doubleAccidentalChance: 5,
 };
 
 describe("generateNote", () => {
@@ -111,19 +113,5 @@ describe("getPoolSize", () => {
   it("includes ledger line positions", () => {
     expect(getPoolSize({ ...baseConfig, ledgerLinesAbove: 2 })).toBe(13);
     expect(getPoolSize({ ...baseConfig, ledgerLinesBelow: 1 })).toBe(11);
-  });
-
-  it("includes accidental variants", () => {
-    expect(getPoolSize({ ...baseConfig, singleAccidentals: true })).toBe(27);
-  });
-
-  it("includes double accidental variants", () => {
-    expect(
-      getPoolSize({
-        ...baseConfig,
-        singleAccidentals: true,
-        doubleAccidentals: true,
-      }),
-    ).toBe(45);
   });
 });

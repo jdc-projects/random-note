@@ -17,6 +17,8 @@ const config: AppConfig = {
   timerSeconds: null,
   soundEnabled: false,
   octaveShift: false,
+  singleAccidentalChance: 20,
+  doubleAccidentalChance: 5,
 };
 
 const note: StaffNote = {

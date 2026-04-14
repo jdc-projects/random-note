@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@mantine/form";
+import { useState } from "react";
 import {
   Select,
   Switch,
@@ -10,9 +11,12 @@ import {
   Title,
   Divider,
   Group,
-  ComboboxItem,
+  Slider,
+  Collapse,
+  UnstyledButton,
+  Text,
 } from "@mantine/core";
-import { IconPlayerPlay, IconVolume } from "@tabler/icons-react";
+import { IconPlayerPlay, IconVolume, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import type { AppConfig } from "@/lib/types";
 import {
   CLEF_OPTIONS,
@@ -42,6 +46,8 @@ function makeKeyOption(name: string): {
 }
 
 export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
   const form = useForm<AppConfig>({
     initialValues: initialConfig,
     validate: {
@@ -81,15 +87,23 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
     },
   ];
 
-  const timerOptions: ComboboxItem[] = [
-    { label: "No timer", value: "null" },
-    { label: "5 seconds", value: "5" },
-    { label: "10 seconds", value: "10" },
-    { label: "15 seconds", value: "15" },
-    { label: "20 seconds", value: "20" },
-    { label: "30 seconds", value: "30" },
-    { label: "60 seconds", value: "60" },
-  ];
+  const TIMER_VALUES = [0, 1, 2, 3, 4, 5, 10, 20, 30, 60];
+  const TIMER_LABELS: Record<number, string> = {
+    0: "No timer",
+    1: "1s",
+    2: "2s",
+    3: "3s",
+    4: "4s",
+    5: "5s",
+    10: "10s",
+    20: "20s",
+    30: "30s",
+    60: "60s",
+  };
+
+  const timerIndex = TIMER_VALUES.indexOf(
+    form.values.timerSeconds ?? 0,
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -156,23 +170,59 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
           {...form.getInputProps("ledgerLinesBelow")}
         />
 
-        <Select
-          label="Timer"
-          data={timerOptions}
-          value={
-            form.values.timerSeconds === null
-              ? "null"
-              : String(form.values.timerSeconds)
-          }
-          onChange={(val) => {
-            form.setFieldValue(
-              "timerSeconds",
-              val === "null" ? null : Number(val),
-            );
-          }}
-          searchable
-          allowDeselect={false}
-        />
+        <Stack gap={4}>
+          <Text size="sm" fw={500}>
+            Timer: {TIMER_LABELS[form.values.timerSeconds ?? 0]}
+          </Text>
+          <Slider
+            min={0}
+            max={TIMER_VALUES.length - 1}
+            step={1}
+            value={timerIndex === -1 ? 0 : timerIndex}
+            onChange={(idx) => {
+              const val = TIMER_VALUES[idx];
+              form.setFieldValue("timerSeconds", val === 0 ? null : val);
+            }}
+            marks={TIMER_VALUES.map((v, i) => ({
+              value: i,
+              label: TIMER_LABELS[v],
+            }))}
+            label={null}
+          />
+        </Stack>
+
+        <Divider />
+
+        <UnstyledButton onClick={() => setAdvancedOpen((o) => !o)}>
+          <Group gap={4}>
+            <Text fw={500} size="sm">
+              Advanced Settings
+            </Text>
+            {advancedOpen ? (
+              <IconChevronUp size={14} />
+            ) : (
+              <IconChevronDown size={14} />
+            )}
+          </Group>
+        </UnstyledButton>
+        <Collapse expanded={advancedOpen}>
+          <Stack gap="md" pl="md">
+            <NumberInput
+              label="Single Accidental Chance (%)"
+              min={0}
+              max={100}
+              disabled={!form.values.singleAccidentals}
+              {...form.getInputProps("singleAccidentalChance")}
+            />
+            <NumberInput
+              label="Double Accidental Chance (%)"
+              min={0}
+              max={100}
+              disabled={!form.values.doubleAccidentals}
+              {...form.getInputProps("doubleAccidentalChance")}
+            />
+          </Stack>
+        </Collapse>
 
         <Divider />
 

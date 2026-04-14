@@ -5,6 +5,19 @@ function selectOption(page: import("@playwright/test").Page, label: string, opti
     .then(() => page.getByRole("option", { name: option, exact: true }).click());
 }
 
+async function setTimerSlider(page: import("@playwright/test").Page, seconds: number) {
+  const TIMER_VALUES = [0, 1, 2, 3, 4, 5, 10, 20, 30, 60];
+  const targetIndex = TIMER_VALUES.indexOf(seconds);
+  if (targetIndex === -1) throw new Error(`Invalid timer value: ${seconds}`);
+
+  const slider = page.getByRole("slider");
+  await slider.click();
+  await page.keyboard.press("Home");
+  for (let i = 0; i < targetIndex; i++) {
+    await page.keyboard.press("ArrowRight");
+  }
+}
+
 test.describe("Random Note Generator", () => {
   test("happy path: configure, start, reveal, next", async ({ page }) => {
     await page.goto("/");
@@ -17,7 +30,7 @@ test.describe("Random Note Generator", () => {
     const accSwitch = page.getByRole("switch", { name: "Single Accidentals" });
     await accSwitch.click();
 
-    await selectOption(page, "Timer", "5 seconds");
+    await setTimerSlider(page, 5);
 
     await page.getByRole("button", { name: /start/i }).click();
 
@@ -58,7 +71,7 @@ test.describe("Random Note Generator", () => {
 
     await page.goto("/");
 
-    await selectOption(page, "Timer", "5 seconds");
+    await setTimerSlider(page, 5);
 
     await page.getByRole("button", { name: /start/i }).click();
 

@@ -45,6 +45,8 @@ export interface AppConfig {
   timerSeconds: number | null;
   soundEnabled: boolean;
   octaveShift: boolean;
+  singleAccidentalChance: number;
+  doubleAccidentalChance: number;
 }
 
 export type AppScreen = "config" | "notes";

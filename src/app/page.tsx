@@ -20,6 +20,8 @@ const DEFAULT_CONFIG: AppConfig = {
   timerSeconds: null,
   soundEnabled: false,
   octaveShift: false,
+  singleAccidentalChance: 20,
+  doubleAccidentalChance: 5,
 };
 
 function loadConfig(): AppConfig {

@@ -20,6 +20,8 @@ const configArb = fc.record({
   timerSeconds: fc.oneof(fc.constant(null), fc.integer({ min: 1, max: 60 })),
   soundEnabled: fc.boolean(),
   octaveShift: fc.boolean(),
+  singleAccidentalChance: fc.integer({ min: 0, max: 100 }),
+  doubleAccidentalChance: fc.integer({ min: 0, max: 100 }),
 }) satisfies fc.Arbitrary<AppConfig>;
 
 describe("property: note generation", () => {

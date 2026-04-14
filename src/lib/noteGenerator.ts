@@ -13,78 +13,47 @@ export function generateNote(
 ): StaffNote {
   const minPosition = -2 * config.ledgerLinesBelow;
   const maxPosition = 8 + 2 * config.ledgerLinesAbove;
+  const positionRange = maxPosition - minPosition + 1;
 
-  const pool: StaffNote[] = [];
+  const pos = minPosition + Math.floor(rng() * positionRange);
+  const { letter, octave } = getClefPositionNote(config.clef, pos);
+  const keyAcc = getKeyAccidental(letter, config.keySignature);
 
-  for (let pos = minPosition; pos <= maxPosition; pos++) {
-    const { letter, octave } = getClefPositionNote(config.clef, pos);
-    const keyAcc = getKeyAccidental(letter, config.keySignature);
+  let accidental: AccidentalType | null = keyAcc;
 
-    pool.push({
-      letter,
-      accidental: keyAcc,
-      octave,
-      staffPosition: pos,
-    });
-
-    if (config.singleAccidentals) {
-      if (keyAcc !== "sharp") {
-        pool.push({
-          letter,
-          accidental: "sharp" as AccidentalType,
-          octave,
-          staffPosition: pos,
-        });
-      }
-      if (keyAcc !== "flat") {
-        pool.push({
-          letter,
-          accidental: "flat" as AccidentalType,
-          octave,
-          staffPosition: pos,
-        });
-      }
-      if (keyAcc !== null) {
-        pool.push({
-          letter,
-          accidental: "natural" as AccidentalType,
-          octave,
-          staffPosition: pos,
-        });
-      }
+  if (config.doubleAccidentals && rng() * 100 < config.doubleAccidentalChance) {
+    const opts: AccidentalType[] = ["double-sharp", "double-flat"];
+    accidental = opts[Math.floor(rng() * opts.length)];
+  } else if (
+    config.singleAccidentals &&
+    rng() * 100 < config.singleAccidentalChance
+  ) {
+    const opts: AccidentalType[] = [];
+    if (keyAcc !== "sharp") {
+      opts.push("sharp");
     }
-
-    if (config.doubleAccidentals) {
-      pool.push({
-        letter,
-        accidental: "double-sharp" as AccidentalType,
-        octave,
-        staffPosition: pos,
-      });
-      pool.push({
-        letter,
-        accidental: "double-flat" as AccidentalType,
-        octave,
-        staffPosition: pos,
-      });
+    if (keyAcc !== "flat") {
+      opts.push("flat");
+    }
+    if (keyAcc !== null) {
+      opts.push("natural");
+    }
+    if (opts.length > 0) {
+      accidental = opts[Math.floor(rng() * opts.length)];
     }
   }
 
-  return pool[Math.floor(rng() * pool.length)];
+  return {
+    letter,
+    accidental,
+    octave,
+    staffPosition: pos,
+  };
 }
 
 export function getPoolSize(config: AppConfig): number {
   const minPosition = -2 * config.ledgerLinesBelow;
   const maxPosition = 8 + 2 * config.ledgerLinesAbove;
   const positionCount = maxPosition - minPosition + 1;
-
-  let perPosition = 1;
-  if (config.singleAccidentals) {
-    perPosition += 2;
-  }
-  if (config.doubleAccidentals) {
-    perPosition += 2;
-  }
-
-  return positionCount * perPosition;
+  return positionCount;
 }

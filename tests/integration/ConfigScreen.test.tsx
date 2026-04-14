@@ -17,6 +17,8 @@ const defaultConfig: AppConfig = {
   timerSeconds: null,
   soundEnabled: false,
   octaveShift: false,
+  singleAccidentalChance: 20,
+  doubleAccidentalChance: 5,
 };
 
 function findButton(text: RegExp) {
@@ -36,7 +38,7 @@ describe("ConfigScreen", () => {
     expect(screen.getByText("Pitch (Transposition)")).toBeInTheDocument();
     expect(screen.getByText("Ledger Lines Above")).toBeInTheDocument();
     expect(screen.getByText("Ledger Lines Below")).toBeInTheDocument();
-    expect(screen.getByText("Timer")).toBeInTheDocument();
+    expect(screen.getByText(/Timer:/)).toBeInTheDocument();
     expect(findButton(/start/i)).toBeInTheDocument();
   });
 
