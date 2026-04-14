@@ -44,6 +44,7 @@ export interface AppConfig {
   ledgerLinesBelow: number;
   timerSeconds: number | null;
   soundEnabled: boolean;
+  octaveShift: boolean;
 }
 
 export type AppScreen = "config" | "notes";

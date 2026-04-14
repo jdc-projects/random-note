@@ -14,6 +14,7 @@ interface StaveDisplayProps {
   note: StaffNote;
   clef: string;
   keySignature: string;
+  octaveShift?: boolean;
 }
 
 function renderStave(
@@ -21,6 +22,7 @@ function renderStave(
   note: StaffNote,
   clef: string,
   keySignature: string,
+  octaveShift: boolean,
 ) {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
@@ -35,7 +37,11 @@ function renderStave(
   const system = factory.System({ width, y: 20 });
 
   const stave = factory.Stave({ x: 0, y: 0, width });
-  stave.addClef(clef);
+  if (octaveShift) {
+    stave.addClef(clef, "default", "8vb");
+  } else {
+    stave.addClef(clef);
+  }
 
   const vfKey = keySignatureToVexflow(keySignature);
   stave.addKeySignature(vfKey);
@@ -54,7 +60,7 @@ function renderStave(
   factory.draw();
 }
 
-export function StaveDisplay({ note, clef, keySignature }: StaveDisplayProps) {
+export function StaveDisplay({ note, clef, keySignature, octaveShift = false }: StaveDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,8 +68,8 @@ export function StaveDisplay({ note, clef, keySignature }: StaveDisplayProps) {
     if (!container) {
       return;
     }
-    renderStave(container, note, clef, keySignature);
-  }, [note, clef, keySignature]);
+    renderStave(container, note, clef, keySignature, octaveShift);
+  }, [note, clef, keySignature, octaveShift]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -72,12 +78,12 @@ export function StaveDisplay({ note, clef, keySignature }: StaveDisplayProps) {
     }
 
     const observer = new ResizeObserver(() => {
-      renderStave(container, note, clef, keySignature);
+      renderStave(container, note, clef, keySignature, octaveShift);
     });
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [note, clef, keySignature]);
+  }, [note, clef, keySignature, octaveShift]);
 
   const ariaLabel = `Musical stave showing note ${note.letter}${note.accidental ? ` ${note.accidental}` : ""} in octave ${note.octave}`;
 

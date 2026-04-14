@@ -13,6 +13,7 @@ const baseConfig: AppConfig = {
   ledgerLinesBelow: 0,
   timerSeconds: null,
   soundEnabled: false,
+  octaveShift: false,
 };
 
 describe("generateNote", () => {

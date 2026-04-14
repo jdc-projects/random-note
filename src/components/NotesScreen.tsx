@@ -28,12 +28,16 @@ export function NotesScreen({
   onRevealToggle,
   noteCount,
 }: NotesScreenProps) {
+  const soundingNote = config.octaveShift
+    ? { ...note, octave: note.octave - 1 }
+    : note;
+
   const concertNote =
     config.transposition !== "C"
-      ? transposeToConcert(note, config.transposition, config.keySignature)
+      ? transposeToConcert(soundingNote, config.transposition, config.keySignature)
       : null;
 
-  useDrone(note, config.soundEnabled);
+  useDrone(soundingNote, config.soundEnabled);
 
   return (
     <Stack gap="md">
@@ -41,6 +45,7 @@ export function NotesScreen({
         note={note}
         clef={config.clef}
         keySignature={config.keySignature}
+        octaveShift={config.octaveShift}
       />
 
       {config.timerSeconds !== null && (
@@ -52,7 +57,7 @@ export function NotesScreen({
       )}
 
       <NoteReveal
-        writtenNote={note}
+        writtenNote={soundingNote}
         concertNote={concertNote}
         open={revealOpen}
         onToggle={onRevealToggle}

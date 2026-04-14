@@ -16,6 +16,7 @@ const defaultConfig: AppConfig = {
   ledgerLinesBelow: 0,
   timerSeconds: null,
   soundEnabled: false,
+  octaveShift: false,
 };
 
 function findButton(text: RegExp) {

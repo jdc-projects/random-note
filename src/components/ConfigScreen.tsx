@@ -136,6 +136,12 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
           }
         />
 
+        <Switch
+          label="8vb (one octave lower)"
+          labelPosition="left"
+          {...form.getInputProps("octaveShift", { type: "checkbox" })}
+        />
+
         <NumberInput
           label="Ledger Lines Above"
           min={0}

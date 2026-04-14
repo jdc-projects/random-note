@@ -19,6 +19,7 @@ const configArb = fc.record({
   ledgerLinesBelow: fc.integer({ min: 0, max: 5 }),
   timerSeconds: fc.oneof(fc.constant(null), fc.integer({ min: 1, max: 60 })),
   soundEnabled: fc.boolean(),
+  octaveShift: fc.boolean(),
 }) satisfies fc.Arbitrary<AppConfig>;
 
 describe("property: note generation", () => {
