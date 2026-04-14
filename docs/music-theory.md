@@ -49,6 +49,10 @@ export interface AppConfig {
   ledgerLinesAbove: number;
   ledgerLinesBelow: number;
   timerSeconds: number | null;        // null = no timer
+  soundEnabled: boolean;               // continuous drone via Web Audio API
+  octaveShift: boolean;                // 8vb — one octave lower
+  singleAccidentalChance: number;     // 0–100, default 20
+  doubleAccidentalChance: number;     // 0–100, default 5
 }
 
 export type AppScreen = 'config' | 'notes';
@@ -108,9 +112,12 @@ Offsets are in semitones, added to the written MIDI number to get concert pitch.
 ```typescript
 const TIMER_OPTIONS = [
   { label: 'No timer', value: null },
+  { label: '1 second', value: 1 },
+  { label: '2 seconds', value: 2 },
+  { label: '3 seconds', value: 3 },
+  { label: '4 seconds', value: 4 },
   { label: '5 seconds', value: 5 },
   { label: '10 seconds', value: 10 },
-  { label: '15 seconds', value: 15 },
   { label: '20 seconds', value: 20 },
   { label: '30 seconds', value: 30 },
   { label: '60 seconds', value: 60 },
@@ -131,54 +138,13 @@ The optional `rng` parameter defaults to `Math.random`. Inject a deterministic f
 
 ### Algorithm
 
-```mermaid
-flowchart TD
-    A[Start: AppConfig + rng] --> B["Compute position range:\nmin = -2 × ledgerLinesBelow\nmax = 8 + 2 × ledgerLinesAbove"]
-    B --> C["For each position in range…"]
-    C --> D["Get natural note for position\n(getClefPositionNote)"]
-    D --> E["Get key-sig accidental\nfor this note letter"]
-    E --> F["Add in-key note to pool"]
-    E --> G{Single accidentals\nenabled?}
-    G -->|Yes| H["Add sharp/flat/natural\nvariants to pool"]
-    G -->|No| I{Double accidentals\nenabled?}
-    H --> I
-    I -->|Yes| J["Add double-sharp/\ndouble-flat to pool"]
-    I -->|No| K{More positions?}
-    J --> K
-    K -->|Yes| C
-    K -->|No| L["Select uniformly\nfrom pool via rng"]
-    L --> M[Return StaffNote]
-```
-
-#### Step-by-step
-
-1. **Position range:**
-   - `minPosition = -2 × config.ledgerLinesBelow`
-   - `maxPosition = 8 + 2 × config.ledgerLinesAbove`
-
-2. **Build the pool** (array of `StaffNote`):
-
-   ```
-   for each position in minPosition..maxPosition:
-     { letter, octave } = getClefPositionNote(config.clef, position)
-     keyAcc = getKeyAccidental(letter, config.keySignature)
-
-     // In-key (always)
-     pool += { letter, accidental: keyAcc, octave, staffPosition: position }
-
-     if singleAccidentals:
-       if keyAcc !== 'sharp':  pool += sharp variant
-       if keyAcc !== 'flat':   pool += flat variant
-       if keyAcc !== null:     pool += natural variant
-
-     if doubleAccidentals:
-       pool += double-sharp variant
-       pool += double-flat variant
-   ```
-
-   Where `getKeyAccidental` returns `'sharp'`, `'flat'`, or `null`.
-
-3. **Select** uniformly: `pool[Math.floor(rng() * pool.length)]`.
+1. **Select a staff position** uniformly at random from the valid range.
+2. **Determine the base note** for that position (letter, octave, key-sig accidental).
+3. **Apply accidental chance:**
+   - If `doubleAccidentals` is on and `rng() * 100 < doubleAccidentalChance`: randomly choose double-sharp or double-flat.
+   - Else if `singleAccidentals` is on and `rng() * 100 < singleAccidentalChance`: randomly choose from available variants (sharp, flat, natural) that differ from the key signature.
+   - Otherwise: use the in-key accidental.
+4. Return the `StaffNote`.
 
 ---
 

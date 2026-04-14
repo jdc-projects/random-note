@@ -78,7 +78,7 @@ CI enforces the same checks in the same order (lint, typecheck, then `npm test`)
 - **Single-page app:** `src/app/page.tsx` is the root. It toggles between `ConfigScreen` and `NotesScreen` via React state (no Next.js routing).
 - **Music logic** lives in `src/lib/` — pure functions with no React dependencies. All music theory constants, note generation, transposition, and MIDI conversion are here.
 - **Components** in `src/components/` — presentational, receiving data and callbacks via props.
-- **Hooks** in `src/hooks/` — reusable React hooks (`useTimer`).
+- **Hooks** in `src/hooks/` — reusable React hooks (`useTimer`, `useDrone`).
 - **State management** is React `useState` in the root page component. No external state library.
 - **VexFlow** renders the stave in `StaveDisplay.tsx` using a ref + Factory API. Re-render on note/clef/key change using `useEffect`.
 
@@ -94,6 +94,8 @@ CI enforces the same checks in the same order (lint, typecheck, then `npm test`)
 ## Key Implementation Details
 
 - Transposition offsets: C=0, Bb=-2, Eb=+3, F=-7 semitones (written → concert).
+- When 8vb is enabled, the sounding pitch is one octave lower than written. The clef renders an "8vb" annotation, and all pitch displays reflect the shifted octave.
+- Note generation is chance-based: a staff position is chosen uniformly, then accidental chance is rolled (single: 20% default, double: 5% default).
 - Key signatures are stored as ordered lists of `{ letter, accidental }` entries.
 - Staff positions: 0 = bottom line, 8 = top line. Ledger lines extend by 2 positions per line.
 - Enharmonic spelling for concert pitch follows the concert key signature's accidental direction.

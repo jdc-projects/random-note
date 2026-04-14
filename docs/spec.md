@@ -23,7 +23,16 @@ Displayed on initial load and when the user taps **Change Settings**.
 | Pitch (Transposition) | Select | C (Concert), Bb, Eb, F | C |
 | Ledger Lines Above | Number Input | 0–10. Integer. Number of ledger lines drawn above the staff. | 0 |
 | Ledger Lines Below | Number Input | 0–10. Integer. Number of ledger lines drawn below the staff. | 0 |
-| Timer | Select | "No timer", "5s", "10s", "15s", "20s", "30s", "60s". Any integer value 1–60 seconds may also be typed. | No timer |
+| Timer | Slider | "No timer", 1s, 2s, 3s, 4s, 5s, 10s, 20s, 30s, 60s. | No timer |
+| Sound | Switch | On / Off. When on, a continuous sine-wave drone of the displayed note plays via Web Audio API. | Off |
+| 8vb | Switch | On / Off. When on, notes sound one octave lower than written. The clef displays an "8vb" annotation, and pitches in the reveal section reflect the shifted octave. | Off |
+
+**Advanced Settings** (collapsible section at the bottom of the form):
+
+| Field | Type | Options / Constraints | Default |
+|---|---|---|---|
+| Single Accidental Chance (%) | Number Input | 0–100. Only used when Single Accidentals is enabled. The probability that a generated note will have a single accidental. | 20 |
+| Double Accidental Chance (%) | Number Input | 0–100. Only used when Double Accidentals is enabled. The probability that a generated note will have a double accidental. | 5 |
 
 **Buttons:**
 
@@ -51,6 +60,7 @@ Displayed on initial load and when the user taps **Change Settings**.
 - Displays the selected **clef** and **key signature**.
 - A single whole note is shown at a random staff position within the configured ledger-line range.
 - If the note requires an accidental (due to chromatic alteration from the key signature), the accidental symbol is drawn next to the note head.
+- When **8vb** is enabled, the clef displays an "8vb" annotation below it, and the note is understood to sound one octave lower than written.
 
 #### 2.2 Note Reveal (Expand/Collapse)
 
@@ -64,8 +74,8 @@ Displayed on initial load and when the user taps **Change Settings**.
 | Written pitch | `"{NoteName}{Accidental}{Octave}"` e.g. "F#4", "Eb3" | Always shown |
 | Concert pitch | `"{NoteName}{Accidental}{Octave}"` | Shown only when transposition ≠ C |
 
-- Written pitch matches exactly what is displayed on the stave.
-- Concert pitch is derived by transposing the written note by the interval defined by the transposition setting (see §3.3).
+- Written pitch reflects the **sounding** pitch. When 8vb is on, the displayed octave is one lower than the written position on the stave.
+- Concert pitch is derived by transposing the sounding note by the interval defined by the transposition setting (see §3.3).
 - The enharmonic spelling of the concert pitch should respect the concert key signature: use sharps for sharp keys, flats for flat keys. For C major / A minor, default to sharps.
 
 #### 2.3 Controls
@@ -81,6 +91,12 @@ Displayed on initial load and when the user taps **Change Settings**.
 - Pressing **Next** manually resets the timer to the full duration.
 - The timer does **not** run while the Config screen is displayed.
 
+#### 2.5 Sound
+
+- When **Sound** is enabled, a continuous sine-wave drone plays the sounding pitch of the displayed note via the Web Audio API.
+- The drone starts when a new note is generated and stops when the note changes or sound is disabled.
+- When 8vb is active, the drone plays one octave lower than the written position.
+
 ---
 
 ## 3. Behaviour
@@ -89,21 +105,16 @@ Displayed on initial load and when the user taps **Change Settings**.
 
 On each note generation (Start or Next):
 
-1. **Determine valid staff positions.** Each clef has 9 on-staff positions (5 lines + 4 spaces). With N ledger lines above, 2N additional positions are available above the staff. With N ledger lines below, 2N additional positions are available below the staff. Total positions = 9 + 2×(above) + 2×(below).
+1. **Select a staff position.** Each clef has 9 on-staff positions (5 lines + 4 spaces). With N ledger lines above, 2N additional positions are available above the staff. With N ledger lines below, 2N additional positions are available below the staff. A position is chosen uniformly at random.
 
-2. **Build the note pool.** For each staff position:
-   - Determine the natural note name (A–G) and octave for that position on the selected clef.
-   - Determine the key-signature accidental for that note name (none, sharp, or flat).
-   - Add the **in-key note** (key-sig accidental applied, no accidental symbol drawn). This is always included.
-   - If **Single Accidentals** is on:
-     - Add a **sharp** variant if the key signature does not already sharpen this note.
-     - Add a **flat** variant if the key signature does not already flatten this note.
-     - Add a **natural** variant if the key signature has a sharp or flat for this note (explicit natural sign to cancel).
-   - If **Double Accidentals** is on:
-     - Add a **double-sharp** variant.
-     - Add a **double-flat** variant.
+2. **Determine the base note.** Get the natural note name (A–G), octave, and key-signature accidental for the selected position.
 
-3. **Select randomly.** Choose uniformly from the pool (equal probability for every entry). Consecutive repeats are allowed.
+3. **Apply accidental chance.** Check in order:
+   - If **Double Accidentals** is on, roll against `doubleAccidentalChance` (default 5%). If triggered, randomly choose double-sharp or double-flat.
+   - Else if **Single Accidentals** is on, roll against `singleAccidentalChance` (default 20%). If triggered, randomly choose from the available single accidental variants (sharp, flat, or natural to cancel a key-sig accidental) that differ from the key signature.
+   - Otherwise, use the in-key accidental (from the key signature).
+
+4. Consecutive repeats are allowed.
 
 ### 3.2 Clef / Staff-Position Reference
 

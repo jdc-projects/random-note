@@ -81,9 +81,11 @@ random-note/
 │   │   ├── constants.ts                 # Key signatures, clefs, transposition data
 │   │   ├── noteGenerator.ts             # Random note generation algorithm
 │   │   ├── transposition.ts             # Written ↔ concert pitch conversion
-│   │   └── noteUtils.ts                 # MIDI conversion, note name parsing, enharmonic utilities
+│   │   ├── noteUtils.ts                 # MIDI conversion, note name parsing, enharmonic utilities
+│   │   └── vexflowUtils.ts              # VexFlow key/accidental helpers
 │   └── hooks/
-│       └── useTimer.ts                  # Timer hook (start, reset, onExpire callback)
+│       ├── useTimer.ts                  # Timer hook (start, reset, onExpire callback)
+│       └── useDrone.ts                  # Web Audio API drone hook (continuous sine wave)
 ├── tests/
 │   ├── unit/
 │   │   ├── noteGenerator.test.ts
@@ -144,6 +146,8 @@ graph TD
 - Uses `@mantine/form` with `initialValues` from `initialConfig`.
 - Validation rules for ledger lines (0–10) and timer (1–60 or null).
 - Double Accidentals switch is disabled when Single Accidentals is off.
+- Collapsible "Advanced Settings" section with single/double accidental chance inputs.
+- Timer is a slider with marks at: No timer, 1s, 2s, 3s, 4s, 5s, 10s, 20s, 30s, 60s.
 - On valid submit, calls `onStart`.
 
 ### 3.3 `NotesScreen`
@@ -152,6 +156,8 @@ graph TD
 
 - Renders `StaveDisplay`, `NoteReveal`, `TimerBar`, and control buttons.
 - Passes reveal state down from root (so it persists across Next but resets on new run).
+- When 8vb is enabled, computes `soundingNote` (octave - 1) for drone, concert pitch, and reveal display.
+- Passes `octaveShift` to `StaveDisplay` for clef annotation rendering.
 
 ### 3.4 `NoteReveal`
 
@@ -262,7 +268,11 @@ const factory = new Factory({
 const system = factory.System();
 
 const stave = factory.Stave({ x: 0, y: 0, width: containerWidth });
-stave.addClef(clef);
+if (octaveShift) {
+  stave.addClef(clef, 'default', '8vb');
+} else {
+  stave.addClef(clef);
+}
 stave.addKeySignature(keySignatureVexflowFormat);
 
 const noteKey = buildVexflowKey(staffNote);
