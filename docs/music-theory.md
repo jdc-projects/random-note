@@ -40,6 +40,13 @@ export interface StaffNote extends Note {
   staffPosition: number;  // 0 = bottom line, 8 = top line, negatives = below
 }
 
+export type InstrumentType =
+  | 'sine'
+  | 'acoustic_grand_piano'
+  | 'trumpet'
+  | 'trombone'
+  | 'tuba';
+
 export interface AppConfig {
   clef: ClefType;
   keySignature: string;               // key into KEY_SIGNATURES map
@@ -49,7 +56,8 @@ export interface AppConfig {
   ledgerLinesAbove: number;
   ledgerLinesBelow: number;
   timerSeconds: number | null;        // null = no timer
-  soundEnabled: boolean;               // continuous drone via Web Audio API
+  soundEnabled: boolean;               // continuous tone via Web Audio API
+  instrument: InstrumentType;          // 'sine' | 'acoustic_grand_piano' | 'trumpet' | 'trombone' | 'tuba'
   octaveShift: boolean;                // 8vb — one octave lower
   singleAccidentalChance: number;     // 0–100, default 20
   doubleAccidentalChance: number;     // 0–100, default 5

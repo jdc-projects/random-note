@@ -24,7 +24,8 @@ Displayed on initial load and when the user taps **Change Settings**.
 | Ledger Lines Above | Number Input | 0–10. Integer. Number of ledger lines drawn above the staff. | 0 |
 | Ledger Lines Below | Number Input | 0–10. Integer. Number of ledger lines drawn below the staff. | 0 |
 | Timer | Slider | "No timer", 1s, 2s, 3s, 4s, 5s, 10s, 20s, 30s, 60s. | No timer |
-| Sound | Switch | On / Off. When on, a continuous sine-wave drone of the displayed note plays via Web Audio API. | Off |
+| Sound | Switch | On / Off. When on, a continuous tone of the displayed note plays via Web Audio API. Instrument can be selected below. | Off |
+| Instrument | Select | Sine Wave, Piano, Trumpet / Cornet, Trombone, Tuba. Only visible when Sound is on. Uses `smplr` Soundfont with loop sustain for sampled instruments. Samples loaded on demand from public CDN. | Sine Wave |
 | 8vb | Switch | On / Off. When on, notes sound one octave lower than written. The clef displays an "8vb" annotation, and pitches in the reveal section reflect the shifted octave. | Off |
 
 **Advanced Settings** (collapsible section at the bottom of the form):
@@ -93,9 +94,11 @@ Displayed on initial load and when the user taps **Change Settings**.
 
 #### 2.5 Sound
 
-- When **Sound** is enabled, a continuous sine-wave drone plays the sounding pitch of the displayed note via the Web Audio API.
-- The drone starts when a new note is generated and stops when the note changes or sound is disabled.
-- When 8vb is active, the drone plays one octave lower than the written position.
+- When **Sound** is enabled, a continuous tone plays the sounding pitch of the displayed note.
+- **Instrument** selection (only visible when Sound is on): Sine Wave, Piano, Trumpet / Cornet, Trombone, Tuba.
+- Sine Wave uses the Web Audio API oscillator directly. All other instruments use `smplr` Soundfont with loop sustain for continuous tone.
+- The tone starts when a new note is generated and stops when the note changes or sound is disabled.
+- When 8vb is active, the tone plays one octave lower than the written position.
 
 ---
 

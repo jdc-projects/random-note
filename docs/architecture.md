@@ -85,7 +85,7 @@ random-note/
 │   │   └── vexflowUtils.ts              # VexFlow key/accidental helpers
 │   └── hooks/
 │       ├── useTimer.ts                  # Timer hook (start, reset, onExpire callback)
-│       └── useDrone.ts                  # Web Audio API drone hook (continuous sine wave)
+│       └── useTone.ts                   # Tone hook (sine oscillator or smplr Soundfont)
 ├── tests/
 │   ├── unit/
 │   │   ├── noteGenerator.test.ts

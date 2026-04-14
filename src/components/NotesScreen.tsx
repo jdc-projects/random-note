@@ -4,7 +4,7 @@ import { Stack, Button, Group } from "@mantine/core";
 import { IconPlayerTrackNext, IconSettings } from "@tabler/icons-react";
 import type { AppConfig, StaffNote } from "@/lib/types";
 import { transposeToConcert } from "@/lib/transposition";
-import { useDrone } from "@/hooks/useDrone";
+import { useTone } from "@/hooks/useTone";
 import { StaveDisplay } from "./StaveDisplay";
 import { NoteReveal } from "./NoteReveal";
 import { TimerBar } from "./TimerBar";
@@ -37,7 +37,7 @@ export function NotesScreen({
       ? transposeToConcert(soundingNote, config.transposition, config.keySignature)
       : null;
 
-  useDrone(soundingNote, config.soundEnabled);
+  useTone(soundingNote, config.soundEnabled, config.instrument);
 
   return (
     <Stack gap="md">

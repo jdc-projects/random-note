@@ -34,6 +34,13 @@ export interface StaffNote extends Note {
   staffPosition: number;
 }
 
+export type InstrumentType =
+  | "sine"
+  | "acoustic_grand_piano"
+  | "trumpet"
+  | "trombone"
+  | "tuba";
+
 export interface AppConfig {
   clef: ClefType;
   keySignature: string;
@@ -44,6 +51,7 @@ export interface AppConfig {
   ledgerLinesBelow: number;
   timerSeconds: number | null;
   soundEnabled: boolean;
+  instrument: InstrumentType;
   octaveShift: boolean;
   singleAccidentalChance: number;
   doubleAccidentalChance: number;

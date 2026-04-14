@@ -17,7 +17,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconPlayerPlay, IconVolume, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
-import type { AppConfig } from "@/lib/types";
+import type { AppConfig, InstrumentType } from "@/lib/types";
 import {
   CLEF_OPTIONS,
   TRANSPOSITION_OPTIONS,
@@ -27,6 +27,18 @@ import {
   MINOR_KEYS_FLAT,
   KEY_SIGNATURES,
 } from "@/lib/constants";
+
+const INSTRUMENT_LABELS: Record<InstrumentType, string> = {
+  sine: "Sine Wave",
+  acoustic_grand_piano: "Piano",
+  trumpet: "Trumpet / Cornet",
+  trombone: "Trombone",
+  tuba: "Tuba",
+};
+
+const INSTRUMENT_SELECT_OPTIONS = Object.entries(INSTRUMENT_LABELS).map(
+  ([value, label]) => ({ value, label }),
+);
 
 interface ConfigScreenProps {
   initialConfig: AppConfig;
@@ -149,6 +161,14 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
             ) : undefined
           }
         />
+
+        {form.values.soundEnabled && (
+          <Select
+            label="Instrument"
+            data={INSTRUMENT_SELECT_OPTIONS}
+            {...form.getInputProps("instrument")}
+          />
+        )}
 
         <Switch
           label="8vb (one octave lower)"

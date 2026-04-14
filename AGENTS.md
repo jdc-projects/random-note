@@ -78,7 +78,7 @@ CI enforces the same checks in the same order (lint, typecheck, then `npm test`)
 - **Single-page app:** `src/app/page.tsx` is the root. It toggles between `ConfigScreen` and `NotesScreen` via React state (no Next.js routing).
 - **Music logic** lives in `src/lib/` — pure functions with no React dependencies. All music theory constants, note generation, transposition, and MIDI conversion are here.
 - **Components** in `src/components/` — presentational, receiving data and callbacks via props.
-- **Hooks** in `src/hooks/` — reusable React hooks (`useTimer`, `useDrone`).
+- **Hooks** in `src/hooks/` — reusable React hooks (`useTimer`, `useTone`).
 - **State management** is React `useState` in the root page component. No external state library.
 - **VexFlow** renders the stave in `StaveDisplay.tsx` using a ref + Factory API. Re-render on note/clef/key change using `useEffect`.
 
@@ -100,6 +100,7 @@ CI enforces the same checks in the same order (lint, typecheck, then `npm test`)
 - Staff positions: 0 = bottom line, 8 = top line. Ledger lines extend by 2 positions per line.
 - Enharmonic spelling for concert pitch follows the concert key signature's accidental direction.
 - The note reveal (expand/collapse) resets to closed on new runs but persists across Next presses.
+- Sound output uses `smplr` Soundfont for sampled instruments (Trumpet / Cornet, Trombone, Tuba, Piano) and Web Audio API oscillator for Sine Wave. Samples are loaded on demand from a public CDN. Sampled instruments use loop sustain for continuous tone.
 - Settings are persisted to localStorage under key `random-note-config`.
 
 ## Deployment

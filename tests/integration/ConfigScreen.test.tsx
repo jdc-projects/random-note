@@ -16,6 +16,7 @@ const defaultConfig: AppConfig = {
   ledgerLinesBelow: 0,
   timerSeconds: null,
   soundEnabled: false,
+  instrument: "sine" as const,
   octaveShift: false,
   singleAccidentalChance: 20,
   doubleAccidentalChance: 5,

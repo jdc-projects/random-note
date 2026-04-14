@@ -19,6 +19,7 @@ const configArb = fc.record({
   ledgerLinesBelow: fc.integer({ min: 0, max: 5 }),
   timerSeconds: fc.oneof(fc.constant(null), fc.integer({ min: 1, max: 60 })),
   soundEnabled: fc.boolean(),
+  instrument: fc.constantFrom("sine", "acoustic_grand_piano", "trumpet", "trombone", "tuba"),
   octaveShift: fc.boolean(),
   singleAccidentalChance: fc.integer({ min: 0, max: 100 }),
   doubleAccidentalChance: fc.integer({ min: 0, max: 100 }),
