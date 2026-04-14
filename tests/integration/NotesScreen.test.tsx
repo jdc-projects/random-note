@@ -15,6 +15,7 @@ const config: AppConfig = {
   ledgerLinesAbove: 0,
   ledgerLinesBelow: 0,
   timerSeconds: null,
+  soundEnabled: false,
 };
 
 const note: StaffNote = {

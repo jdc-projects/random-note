@@ -12,7 +12,7 @@ import {
   Group,
   ComboboxItem,
 } from "@mantine/core";
-import { IconPlayerPlay } from "@tabler/icons-react";
+import { IconPlayerPlay, IconVolume } from "@tabler/icons-react";
 import type { AppConfig } from "@/lib/types";
 import {
   CLEF_OPTIONS,
@@ -123,6 +123,17 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
           label="Pitch (Transposition)"
           data={TRANSPOSITION_OPTIONS}
           {...form.getInputProps("transposition")}
+        />
+
+        <Switch
+          label="Sound"
+          labelPosition="left"
+          {...form.getInputProps("soundEnabled", { type: "checkbox" })}
+          thumbIcon={
+            form.values.soundEnabled ? (
+              <IconVolume size={12} stroke={1.5} />
+            ) : undefined
+          }
         />
 
         <NumberInput

@@ -43,6 +43,7 @@ export interface AppConfig {
   ledgerLinesAbove: number;
   ledgerLinesBelow: number;
   timerSeconds: number | null;
+  soundEnabled: boolean;
 }
 
 export type AppScreen = "config" | "notes";

@@ -18,6 +18,7 @@ const DEFAULT_CONFIG: AppConfig = {
   ledgerLinesAbove: 0,
   ledgerLinesBelow: 0,
   timerSeconds: null,
+  soundEnabled: false,
 };
 
 function loadConfig(): AppConfig {
