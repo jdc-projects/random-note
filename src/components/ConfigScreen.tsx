@@ -170,7 +170,7 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
           {...form.getInputProps("ledgerLinesBelow")}
         />
 
-        <Stack gap={4}>
+        <Stack gap={4} mb="md">
           <Text size="sm" fw={500}>
             Timer: {TIMER_LABELS[form.values.timerSeconds ?? 0]}
           </Text>
@@ -185,7 +185,7 @@ export function ConfigScreen({ initialConfig, onStart }: ConfigScreenProps) {
             }}
             marks={TIMER_VALUES.map((v, i) => ({
               value: i,
-              label: TIMER_LABELS[v],
+              label: i % 3 === 0 || i === TIMER_VALUES.length - 1 ? TIMER_LABELS[v] : undefined,
             }))}
             label={null}
           />
